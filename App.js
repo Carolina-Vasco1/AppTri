@@ -1,5 +1,20 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, SafeAreaView, Platform, Animated, ScrollView, StatusBar } from 'react-native';
+
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ImageBackground,
+  SafeAreaView,
+  Platform,
+  Animated,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -10,15 +25,15 @@ function SplashScreen({ navigation }) {
   const animationValue = useRef(new Animated.Value(0)).current; 
 
   useEffect(() => {
-    Animated.timing(animationValue, {
-      toValue: 1,
-      duration: 4500, 
-      useNativeDriver: Platform.OS !== 'web',
-    }).start();
+      Animated.timing(animationValue, {
+    toValue: 1,
+    duration: 2500,
+    useNativeDriver: Platform.OS !== 'web',
+  }).start();
 
-    const timer = setTimeout(() => {
-      navigation.replace('Home');
-    }, 5000);
+  const timer = setTimeout(() => {
+    navigation.replace('Home');
+  }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -58,8 +73,8 @@ function SplashScreen({ navigation }) {
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.splashTitle}>LA TRI</Text>
-          <Text style={styles.loadingText}>Cargando información...</Text>
+          <Text style={styles.splashTitle}>Ecuador - La Tri</Text>
+          <Text style={styles.loadingText}>Selección Ecuatoriana de Fútbol</Text>
         </View>
       </ImageBackground>
     </View>
@@ -68,106 +83,128 @@ function SplashScreen({ navigation }) {
 
 // --- 2. PANTALLA DE INICIO (HOME SCREEN - MINIMALISTA & PROFESIONAL) ---
 function HomeScreen() {
+
+  const mostrarMensaje = () => {
+  if (Platform.OS === 'web') {
+    alert("¡Vamos Ecuador! La Tri representa el orgullo de todos los ecuatorianos.");
+  } else {
+    Alert.alert(
+      "¡Vamos Ecuador!",
+      "La Tri representa el orgullo de todos los ecuatorianos."
+    );
+  }
+};
+
   return (
     <SafeAreaView style={styles.homeContainer}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
-      {/* MARCA DE AGUA PARA EL HOME */}
-      <ImageBackground 
-        source={require('./assets/home.png')} 
+
+      <ImageBackground
+        source={require('./assets/home.png')}
         style={styles.homeBgImage}
         imageStyle={styles.homeBgStyle}
       >
-        {/* HEADER MINIMALISTA */}
         <View style={styles.minimalHeader}>
-          <Text style={styles.headerSubtitle}>FEDERACIÓN ECUATORIANA DE FÚTBOL</Text>
-          <Text style={styles.headerMainTitle}>Selección Nacional</Text>
-          
-          {/* IMAGEN FLOTANTE EN LA PARTE DERECHA */}
-          <Image 
-            source={require('./assets/seleccion.png')} 
+          <Text style={styles.headerSubtitle}>
+            FEDERACIÓN ECUATORIANA DE FÚTBOL
+          </Text>
+
+          <Text style={styles.headerMainTitle}>
+            Selección Nacional
+          </Text>
+
+          <Image
+            source={require('./assets/seleccion.png')}
             style={styles.floatingHeaderImage}
             resizeMode="contain"
           />
-          
+
           <View style={styles.minimalDivider} />
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.homeScroll}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.homeScroll}
+        >
           <View style={styles.responsiveContent}>
-            
-            {/* SECCIÓN: RESUMEN INSTITUCIONAL */}
+
+            {/* PERFIL OFICIAL */}
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>01</Text>
               <Text style={styles.sectionTitle}>PERFIL OFICIAL</Text>
             </View>
-            
+
             <View style={styles.minimalCard}>
+
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Seudónimo</Text>
-                <Text style={styles.infoValue}>La Tri / La Tricolor</Text>
+                <Text style={styles.infoValue}>La Tri</Text>
               </View>
+
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Fundación</Text>
-                <Text style={styles.infoValue}>30 de Mayo de 1925</Text>
+                <Text style={styles.infoLabel}>Confederación</Text>
+                <Text style={styles.infoValue}>CONMEBOL</Text>
               </View>
+
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Asociación</Text>
-                <Text style={styles.infoValue}>FEF (CONMEBOL)</Text>
+                <Text style={styles.infoLabel}>Entrenador</Text>
+                <Text style={styles.infoValue}>Sebastián Beccacece</Text>
               </View>
+
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Ranking Mundial FIFA</Text>
-                <Text style={styles.infoValue}> 23. Puesto</Text>
+                <Text style={styles.infoLabel}>Estadio</Text>
+                <Text style={styles.infoValue}>Rodrigo Paz Delgado</Text>
               </View>
+
             </View>
 
-            {/* SECCIÓN: HITOS HISTÓRICOS */}
+            {/* HISTORIA */}
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>02</Text>
-              <Text style={styles.sectionTitle}>COMPETICIONES GLOBALES</Text>
+              <Text style={styles.sectionTitle}>HISTORIA</Text>
             </View>
 
             <View style={styles.minimalCard}>
               <Text style={styles.editorialParagraph}>
-                Ecuador ha consolidado su presencia en el panorama internacional a través de un crecimiento sostenido en las últimas décadas, logrando hitos trascendentales en la historia del balompié sudamericano.
+                La Selección Ecuatoriana de Fútbol representa al Ecuador en
+                competiciones internacionales organizadas por FIFA y CONMEBOL.
               </Text>
-              
+
               <View style={styles.bulletItem}>
                 <Text style={styles.bulletPoint}>▪</Text>
                 <Text style={styles.bulletText}>
-                  <Text style={styles.boldText}>Copas del Mundo: </Text>Cuatro clasificaciones históricas absolutas: Corea-Japón 2002, Alemania 2006, Brasil 2014 y Qatar 2022.
+                  Participó en los Mundiales de 2002, 2006, 2014 y 2022.
                 </Text>
               </View>
 
               <View style={styles.bulletItem}>
                 <Text style={styles.bulletPoint}>▪</Text>
                 <Text style={styles.bulletText}>
-                  <Text style={styles.boldText}>Máximo Logro: </Text>Clasificación a los Octavos de Final en la Copa Mundial de Alemania 2006.
-                </Text>
-              </View>
-
-              <View style={styles.bulletItem}>
-                <Text style={styles.bulletPoint}>▪</Text>
-                <Text style={styles.bulletText}>
-                  <Text style={styles.boldText}>Goleador Histórico: </Text>Enner Valencia, con un registro legendario en citas mundialistas.
+                  Su mejor actuación fue llegar a octavos de final en Alemania 2006.
                 </Text>
               </View>
             </View>
 
-            {/* SECCIÓN: FILOSOFÍA */}
+            {/* BOTÓN INTERACTIVO */}
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>03</Text>
-              <Text style={styles.sectionTitle}>IDENTIDAD INSTITUCIONAL</Text>
+              <Text style={styles.sectionTitle}>INTERACCIÓN</Text>
             </View>
 
             <View style={styles.minimalCard}>
-              <Text style={styles.quoteText}>
-                "El fútbol en Ecuador trasciende la cancha; es un pilar de unidad cultural que refleja la diversidad, la resiliencia y el orgullo indomable de toda una nación."
-              </Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={mostrarMensaje}
+              >
+                <Text style={styles.buttonText}>
+                  Mostrar Mensaje
+                </Text>
+              </TouchableOpacity>
             </View>
 
-            {/* FOOTER DISCRETO */}
-            <Text style={styles.footerText}>Documentación Técnica Operativa • 2026</Text>
+            <Text style={styles.footerText}>
+              Aplicación desarrollada con React Native y Expo
+            </Text>
 
           </View>
         </ScrollView>
@@ -175,7 +212,6 @@ function HomeScreen() {
     </SafeAreaView>
   );
 }
-
 // --- 3. ENRUTADOR DE LA APLICACIÓN ---
 export default function App() {
   return (
@@ -373,4 +409,16 @@ const styles = StyleSheet.create({
     marginTop: 40,
     letterSpacing: 1,
   },
+  button: {
+  backgroundColor: '#0033A0',
+  paddingVertical: 12,
+  borderRadius: 8,
+  alignItems: 'center',
+},
+
+buttonText: {
+  color: '#FFFFFF',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
 });
