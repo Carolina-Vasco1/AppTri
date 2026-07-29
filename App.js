@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-
 import {
   StyleSheet,
   Text,
@@ -12,31 +11,34 @@ import {
   ScrollView,
   StatusBar,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-// --- 1. PANTALLA DE BIENVENIDA (SPLASH SCREEN) ---
+const COLOR_ROJO_ESPAÑA = '#C60B1E';
+const COLOR_AMARILLO_ESPAÑA = '#FFC400';
+const COLOR_AZUL_CARD = '#0B2B70';
+const COLOR_CELESTE_BANDERA = '#75AADB';
+
+// --- SplashScreen ---
 function SplashScreen({ navigation }) {
-  const animationValue = useRef(new Animated.Value(0)).current; 
+  const animationValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-      Animated.timing(animationValue, {
-    toValue: 1,
-    duration: 2500,
-    useNativeDriver: Platform.OS !== 'web',
-  }).start();
+    const animation = Animated.timing(animationValue, {
+      toValue: 1,
+      duration: 2500,
+      useNativeDriver: Platform.OS !== 'web',
+    });
 
-  const timer = setTimeout(() => {
-    navigation.replace('Home');
-  }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
+    animation.start();
+    return () => animation.stop();
+  }, [animationValue]);
 
   const spin = animationValue.interpolate({
     inputRange: [0, 1],
@@ -54,182 +56,266 @@ function SplashScreen({ navigation }) {
   });
 
   return (
-    <View style={styles.container}>
-      <ImageBackground 
-        source={require('./assets/fondo.png')} 
+    <View style={styles.splashContainer}>
+      <StatusBar barStyle="light-content" backgroundColor={COLOR_ROJO_ESPAÑA} />
+      <ImageBackground
+        source={require('./assets/fondo_esp.jpg')}
         style={styles.backgroundImage}
-        imageStyle={{ opacity: 0.12 }}
+        imageStyle={styles.splashBgStyle}
       >
         <View style={styles.centerBox}>
           <View style={styles.imageContainer}>
-            <Animated.Image 
-              source={require('./assets/ec.png')} 
-              style={[styles.logoAbsolute, { opacity: opacityImg1, transform: [{ rotate: spin }] }]}
+            <Animated.Image
+              source={require('./assets/españa.jpg')}
+              style={[
+                styles.logoAbsolute,
+                { opacity: opacityImg1, transform: [{ rotate: spin }] },
+              ]}
               resizeMode="contain"
             />
-            <Animated.Image 
-              source={require('./assets/ec2.png')} 
-              style={[styles.logoAbsolute, { opacity: opacityImg2, transform: [{ rotate: spin }] }]}
+            <Animated.Image
+              source={require('./assets/españa.jpg')}
+              style={[
+                styles.logoAbsolute,
+                { opacity: opacityImg2, transform: [{ rotate: spin }] },
+              ]}
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.splashTitle}>Ecuador - La Tri</Text>
-          <Text style={styles.loadingText}>Selección Ecuatoriana de Fútbol</Text>
+          <Text style={styles.splashTitle}>España - La Roja</Text>
+          <Text style={styles.loadingText}>Real Federación Española de Fútbol</Text>
+
+          <TouchableOpacity
+            style={styles.splashButton}
+            onPress={() => navigation.replace('MainApp')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.splashButtonText}>Entrar a la App</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>
   );
 }
 
-// --- 2. PANTALLA DE INICIO (HOME SCREEN - MINIMALISTA & PROFESIONAL) ---
+// --- HomeScreen ---
 function HomeScreen() {
-
-  const mostrarMensaje = () => {
-  if (Platform.OS === 'web') {
-    alert("¡Vamos Ecuador! La Tri representa el orgullo de todos los ecuatorianos.");
-  } else {
-    Alert.alert(
-      "¡Vamos Ecuador!",
-      "La Tri representa el orgullo de todos los ecuatorianos."
-    );
-  }
-};
-
   return (
-    <SafeAreaView style={styles.homeContainer}>
+    <SafeAreaView style={styles.screenContainer}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      <ImageBackground
-        source={require('./assets/home.png')}
-        style={styles.homeBgImage}
-        imageStyle={styles.homeBgStyle}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.homeScrollContent}
       >
-        <View style={styles.minimalHeader}>
-          <Text style={styles.headerSubtitle}>
-            FEDERACIÓN ECUATORIANA DE FÚTBOL
-          </Text>
-
-          <Text style={styles.headerMainTitle}>
-            Selección Nacional
-          </Text>
-
-          <Image
-            source={require('./assets/seleccion.png')}
-            style={styles.floatingHeaderImage}
-            resizeMode="contain"
-          />
-
-          <View style={styles.minimalDivider} />
-        </View>
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.homeScroll}
-        >
-          <View style={styles.responsiveContent}>
-
-            {/* PERFIL OFICIAL */}
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionNumber}>01</Text>
-              <Text style={styles.sectionTitle}>PERFIL OFICIAL</Text>
-            </View>
-
-            <View style={styles.minimalCard}>
-
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Seudónimo</Text>
-                <Text style={styles.infoValue}>La Tri</Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Confederación</Text>
-                <Text style={styles.infoValue}>CONMEBOL</Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Entrenador</Text>
-                <Text style={styles.infoValue}>Sebastián Beccacece</Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Estadio</Text>
-                <Text style={styles.infoValue}>Rodrigo Paz Delgado</Text>
-              </View>
-
-            </View>
-
-            {/* HISTORIA */}
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionNumber}>02</Text>
-              <Text style={styles.sectionTitle}>HISTORIA</Text>
-            </View>
-
-            <View style={styles.minimalCard}>
-              <Text style={styles.editorialParagraph}>
-                La Selección Ecuatoriana de Fútbol representa al Ecuador en
-                competiciones internacionales organizadas por FIFA y CONMEBOL.
-              </Text>
-
-              <View style={styles.bulletItem}>
-                <Text style={styles.bulletPoint}>▪</Text>
-                <Text style={styles.bulletText}>
-                  Participó en los Mundiales de 2002, 2006, 2014 y 2022.
-                </Text>
-              </View>
-
-              <View style={styles.bulletItem}>
-                <Text style={styles.bulletPoint}>▪</Text>
-                <Text style={styles.bulletText}>
-                  Su mejor actuación fue llegar a octavos de final en Alemania 2006.
-                </Text>
-              </View>
-            </View>
-
-            {/* BOTÓN INTERACTIVO */}
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionNumber}>03</Text>
-              <Text style={styles.sectionTitle}>INTERACCIÓN</Text>
-            </View>
-
-            <View style={styles.minimalCard}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={mostrarMensaje}
-              >
-                <Text style={styles.buttonText}>
-                  Mostrar Mensaje
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.footerText}>
-              Aplicación desarrollada con React Native y Expo
-            </Text>
-
+        <View style={styles.responsiveContent}>
+          <View style={styles.welcomeBanner}>
+            <Text style={styles.welcomeTitle}>Hola, Carolina</Text>
+            <Text style={styles.welcomeSubtitle}>Torneo de selecciones 2026</Text>
           </View>
-        </ScrollView>
-      </ImageBackground>
+
+          <Text style={styles.sectionCategoryTitle}>SEGUNDO LUGAR</Text>
+
+          <View style={styles.argentinaCard}>
+            <View style={styles.flagContainer}>
+              <View style={styles.flagStripeCelesteTop} />
+              <View style={styles.flagStripeWhite}>
+                <Text style={styles.countryName}>ARGENTINA</Text>
+              </View>
+              <View style={styles.flagStripeCelesteBottom} />
+            </View>
+
+            <View style={styles.cardDetails}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Director técnico</Text>
+                <Text style={styles.infoValueBold}>L. Scaloni</Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Capitán</Text>
+                <Text style={styles.infoValueBold}>L. Messi</Text>
+              </View>
+
+              <View style={[styles.infoRow, styles.lastInfoRow]}>
+                <Text style={styles.infoLabel}>Final</Text>
+                <Text style={styles.infoValueBold}>1 - 2</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
-// --- 3. ENRUTADOR DE LA APLICACIÓN ---
+
+// --- EspanaScreen ---
+function EspanaScreen() {
+  return (
+    <SafeAreaView style={styles.screenContainer}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.homeScrollContent}
+      >
+        <View style={styles.responsiveContent}>
+          <View style={styles.spainHeaderContainer}>
+            <Text style={styles.spainHeaderTitle}>España</Text>
+            <Text style={styles.spainHeaderSubtitle}>Selección campeona</Text>
+          </View>
+
+          <View style={styles.argentinaCard}>
+            <View style={styles.spainFlagContainer}>
+              <View style={styles.flagStripeRedTop} />
+              <View style={styles.flagStripeYellow}>
+                <Text style={styles.spainCountryText}>ESPAÑA</Text>
+              </View>
+              <View style={styles.flagStripeRedBottom} />
+            </View>
+
+            <View style={styles.cardDetails}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Director técnico</Text>
+                <Text style={styles.infoValueBold}>L. de la Fuente</Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Capitán</Text>
+                <Text style={styles.infoValueBold}>Á. Morata</Text>
+              </View>
+
+              <View style={[styles.infoRow, styles.lastInfoRow]}>
+                <Text style={styles.infoLabel}>Final</Text>
+                <Text style={styles.infoValueBold}>2 - 1</Text>
+              </View>
+            </View>
+          </View>
+
+          <Text style={styles.sectionCategoryTitle}>JUGADORES DESTACADOS</Text>
+
+          <View style={styles.playersCard}>
+            <View style={styles.playerRow}>
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>19</Text>
+              </View>
+              <Text style={styles.playerName}>Lamine Yamal</Text>
+              <Text style={styles.playerPosition}>Extremo</Text>
+            </View>
+
+            <View style={styles.playerRow}>
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>16</Text>
+              </View>
+              <Text style={styles.playerName}>Rodri</Text>
+              <Text style={styles.playerPosition}>Volante</Text>
+            </View>
+
+            <View style={[styles.playerRow, styles.lastInfoRow]}>
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>17</Text>
+              </View>
+              <Text style={styles.playerName}>Nico Williams</Text>
+              <Text style={styles.playerPosition}>Extremo</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+// --- AcercaDeScreen ---
+function AcercaDeScreen() {
+  return (
+    <SafeAreaView style={styles.screenContainer}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.responsiveContent}>
+          <View style={styles.headerBox}>
+            <Text style={styles.headerSubtitle}>INFORMACIÓN DEL DESARROLLADOR</Text>
+            <Text style={styles.headerMainTitle}>Acerca de</Text>
+            <View style={styles.minimalDivider} />
+          </View>
+
+          <View style={styles.profileCard}>
+            <Image
+              source={require('./assets/lis.jpg')}
+              style={styles.profileImage}
+              resizeMode="cover"
+            />
+            <Text style={styles.developerName}>Carolina Vasco</Text>
+
+            <View style={styles.infoDetailsContainer}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Carrera</Text>
+                <Text style={styles.infoValue}>Sistemas de información</Text>
+              </View>
+
+              <View style={[styles.infoRow, styles.lastInfoRow]}>
+                <Text style={styles.infoLabel}>Semestre</Text>
+                <Text style={styles.infoValue}>Décimo semestre</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+// --- MainTabs ---
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: COLOR_AZUL_CARD,
+        tabBarInactiveTintColor: '#A0AEC0',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopWidth: 1,
+          borderTopColor: '#E2E8F0',
+          height: Platform.OS === 'ios' ? 95 : 75,
+          paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+          paddingTop: 8,
+          elevation: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
+        tabBarIcon: ({ color }) => {
+          let iconSymbol = '🏠';
+          if (route.name === 'Home') iconSymbol = '🏠';
+          else if (route.name === 'España') iconSymbol = '🏁';
+          else if (route.name === 'Acerca de') iconSymbol = '👥';
+
+          return <Text style={{ fontSize: 18, color }}>{iconSymbol}</Text>;
+        },
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="España" component={EspanaScreen} />
+      <Tab.Screen name="Acerca de" component={AcercaDeScreen} />
+    </Tab.Navigator>
+  );
+}
+
+// --- App ---
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="MainApp" component={MainTabs} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-// --- 4. ESTILOS DE LA INTERFAZ ---
+// --- StyleSheet ---
 const styles = StyleSheet.create({
-  // --- Estilos Splash ---
-  container: {
+  splashContainer: {
     flex: 1,
-    backgroundColor: '#FFD700', 
+    backgroundColor: COLOR_ROJO_ESPAÑA,
   },
   backgroundImage: {
     flex: 1,
@@ -238,14 +324,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  splashBgStyle: {
+    opacity: 0.12,
+  },
   centerBox: {
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
   },
   imageContainer: {
     width: 210,
     height: 210,
-    marginBottom: 25,
+    marginBottom: 20,
     position: 'relative',
   },
   logoAbsolute: {
@@ -254,39 +345,224 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   splashTitle: {
-    fontSize: 42,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#0033A0',
-    letterSpacing: 6,
+    color: COLOR_AMARILLO_ESPAÑA,
+    letterSpacing: 3,
+    textAlign: 'center',
   },
   loadingText: {
     fontSize: 14,
-    color: '#DA291C',
-    marginTop: 8,
+    color: '#FFFFFF',
+    marginTop: 6,
     fontStyle: 'italic',
     fontWeight: '500',
+    textAlign: 'center',
   },
-
-  // --- Estilos Home Screen (Minimalista y Profesional) ---
-  homeContainer: {
-    flex: 1,
-    backgroundColor: '#FFFFFF', 
+  splashButton: {
+    marginTop: 35,
+    backgroundColor: COLOR_AMARILLO_ESPAÑA,
+    paddingVertical: 14,
+    paddingHorizontal: 36,
+    borderRadius: 25,
+    elevation: 3,
   },
-  homeBgImage: {
+  splashButtonText: {
+    color: '#1A202C',
+    fontSize: 16,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  screenContainer: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  homeScrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 10 : 25,
+    paddingBottom: 30,
+  },
+  responsiveContent: {
     width: '100%',
-    height: '100%',
+    maxWidth: 550,
+    alignSelf: 'center',
   },
-  // --- AQUÍ SE SUBIÓ EL TONO DE LA MARCA DE AGUA ---
-  homeBgStyle: {
-    opacity: 0.18, // Subido de 0.05 a 0.18 para que tenga más fuerza y presencia
-    resizeMode: 'cover',
+  welcomeBanner: {
+    backgroundColor: COLOR_AZUL_CARD,
+    borderRadius: 16,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 25,
   },
-  minimalHeader: {
-    position: 'relative',
-    paddingTop: Platform.OS === 'ios' ? 20 : 40,
+  welcomeTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 6,
+  },
+  welcomeSubtitle: {
+    fontSize: 13,
+    color: '#D0D9F0',
+    fontWeight: '400',
+  },
+  sectionCategoryTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#94A3B8',
+    letterSpacing: 1.5,
+    marginTop: 25,
+    marginBottom: 15,
+  },
+  argentinaCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+  },
+  flagContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  flagStripeCelesteTop: {
+    height: 22,
+    backgroundColor: COLOR_CELESTE_BANDERA,
+  },
+  flagStripeWhite: {
+    height: 35,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flagStripeCelesteBottom: {
+    height: 22,
+    backgroundColor: COLOR_CELESTE_BANDERA,
+  },
+  countryName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1E3A8A',
+    letterSpacing: 3,
+  },
+  spainHeaderContainer: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  spainHeaderTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0F172A',
+  },
+  spainHeaderSubtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  spainFlagContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  flagStripeRedTop: {
+    height: 18,
+    backgroundColor: COLOR_ROJO_ESPAÑA,
+  },
+  flagStripeYellow: {
+    height: 38,
+    backgroundColor: COLOR_AMARILLO_ESPAÑA,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flagStripeRedBottom: {
+    height: 18,
+    backgroundColor: COLOR_ROJO_ESPAÑA,
+  },
+  spainCountryText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#701A06',
+    letterSpacing: 3,
+  },
+  playersCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+  },
+  playerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  badgeContainer: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 14,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#64748B',
+  },
+  playerName: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#0F172A',
+  },
+  playerPosition: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+  cardDetails: {
+    paddingHorizontal: 8,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  lastInfoRow: {
+    borderBottomWidth: 0,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  infoValueBold: {
+    fontSize: 14,
+    color: '#0F172A',
+    fontWeight: 'bold',
+  },
+  scrollContent: {
     paddingHorizontal: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    paddingBottom: 40,
+    paddingTop: 20,
+  },
+  headerBox: {
+    marginBottom: 10,
   },
   headerSubtitle: {
     fontSize: 10,
@@ -297,128 +573,50 @@ const styles = StyleSheet.create({
   },
   headerMainTitle: {
     fontSize: 32,
-    fontWeight: '300', 
-    color: '#1A202C',
+    fontWeight: '300',
+    color: '#2D3748',
     letterSpacing: -0.5,
-  },
-  floatingHeaderImage: {
-    position: 'absolute',
-    right: 24,
-    bottom: 10,
-    width: 80,
-    height: 60,
-    zIndex: 10,
   },
   minimalDivider: {
     width: 40,
     height: 3,
-    backgroundColor: '#0033A0', 
+    backgroundColor: COLOR_ROJO_ESPAÑA,
     marginTop: 12,
     marginBottom: 10,
   },
-  homeScroll: {
-    paddingHorizontal: 24,
-    paddingBottom: 40,
-  },
-  responsiveContent: {
-    width: '100%',
-    maxWidth: 550,
-    alignSelf: 'center',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
+  profileCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 12,
-  },
-  sectionNumber: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#0033A0',
-    marginRight: 8,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#4A5568',
-    letterSpacing: 1.5,
-  },
-  minimalCard: {
-    backgroundColor: 'rgba(247, 250, 252, 0.75)', 
-    borderRadius: 8,
-    padding: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#F1F5F9',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    marginTop: 10,
   },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EDF2F7',
+  profileImage: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    marginBottom: 16,
   },
-  infoLabel: {
-    fontSize: 14,
-    color: '#718096',
-    fontWeight: '500',
+  developerName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#0F172A',
+    marginBottom: 16,
+  },
+  infoDetailsContainer: {
+    width: '100%',
+    marginTop: 8,
   },
   infoValue: {
     fontSize: 14,
-    color: '#2D3748',
+    color: '#0F172A',
     fontWeight: '600',
   },
-  editorialParagraph: {
-    fontSize: 14,
-    color: '#4A5568',
-    lineHeight: 22,
-    marginBottom: 15,
-    textAlign: 'justify',
-  },
-  bulletItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  bulletPoint: {
-    fontSize: 10,
-    color: '#DA291C',
-    marginRight: 10,
-    marginTop: 4,
-  },
-  bulletText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#4A5568',
-    lineHeight: 20,
-  },
-  boldText: {
-    fontWeight: '700',
-    color: '#1A202C',
-  },
-  quoteText: {
-    fontSize: 15,
-    fontStyle: 'italic',
-    color: '#4A5568',
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  footerText: {
-    fontSize: 11,
-    color: '#A0AEC0',
-    textAlign: 'center',
-    marginTop: 40,
-    letterSpacing: 1,
-  },
-  button: {
-  backgroundColor: '#0033A0',
-  paddingVertical: 12,
-  borderRadius: 8,
-  alignItems: 'center',
-},
-
-buttonText: {
-  color: '#FFFFFF',
-  fontSize: 16,
-  fontWeight: 'bold',
-},
 });
